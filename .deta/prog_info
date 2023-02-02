@@ -1,0 +1,1 @@
+{"id":"a500b270-ea87-48f8-b330-95c34862aaf8","space":50738,"runtime":"python3.9","name":"FastAPI","path":"p7at2g","project":"e0eu03n1","account":"144798365827","region":"sa-east-1","deps":["python-jose","passlib","pymongo","python-multipart","jinja2","fastapi==0.89.0"],"envs":null,"public":true,"log_level":"debug","cron":""}

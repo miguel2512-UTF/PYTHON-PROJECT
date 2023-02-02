@@ -1,0 +1,6 @@
+fastapi==0.89.0
+python-jose
+passlib
+pymongo
+python-multipart
+jinja2
