@@ -5,10 +5,14 @@ from db.schemas.user import user_schema_secure, user_schema, users_schema
 from bson import ObjectId
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
+from routers.login import current_user
+from passlib.context import CryptContext
 
 route = APIRouter(prefix="/userdb", tags=["userdb"])
 
 templates = Jinja2Templates(directory="templates")
+
+crypt = CryptContext(schemes=["bcrypt"])
 
 @route.get("/")
 async def user_home():
@@ -25,12 +29,12 @@ async def user_by_id (id: str):
     return buscar_usuario_por_columna("_id", ObjectId(id))
 
 # Get - Create Form
-@route.get("/formcreate")
+@route.get("/formcreate", response_class=HTMLResponse)
 async def form_create(request: Request):
     return templates.TemplateResponse("views/user/create.html",{"request": request})
 
 # Get - Update Form
-@route.get("/formupdate/{id}")
+@route.get("/formupdate/{id}", response_class=HTMLResponse)
 async def form_update(id: str, request: Request):
     user = user_schema_secure(db_client.user.find_one({"_id": ObjectId(id)}))
     return templates.TemplateResponse("views/user/update.html",{"request":request, "user": user})
@@ -42,6 +46,7 @@ async def create_user (user: Usuario = Depends(Usuario.as_form)):
         raise HTTPException(status_code=404, detail="El usuario ya existe")
 
     user_dict = dict(user)
+    user_dict["password"] = crypt.encrypt(user_dict["password"])
 
     id = db_client.user.insert_one(user_dict).inserted_id
 

@@ -1,17 +1,21 @@
-from fastapi import Request
-from fastapi import FastAPI
-from routers import products, users, users_db
+from fastapi import FastAPI, Request, Depends
+from routers import products, users, users_db, login, home
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from routers.login import current_user
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
 
+PROTECT = [Depends(current_user)]
+
 # Routers
 app.include_router(products.route)
 app.include_router(users.route)
-app.include_router(users_db.route)
+app.include_router(users_db.route, dependencies=PROTECT)
+app.include_router(login.route)
+app.include_router(home.route, dependencies=PROTECT)
 app.mount("/static", StaticFiles(directory = "static"), name="static")
 
 @app.get("/")
