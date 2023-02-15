@@ -7,5 +7,5 @@ route = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 @route.get("/home")
-async def home(request: Request, auth = Depends(current_user)):
+async def home(request: Request):
     return templates.TemplateResponse("views/principal.html",{"request":request})

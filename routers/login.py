@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Request, HTTPException, Depends, Response
-from fastapi.templating import Jinja2Templates
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
@@ -8,53 +7,61 @@ from db.client import db_client
 from db.models.user import Usuario
 from db.schemas.user import user_schema, user_schema_secure
 from security.utils import OAuth2PasswordBearerWithCookie
-from security.config import Config
+from security.config import SecurityConfig as security
+from config.settings import Settings as settings
+from fastapi.responses import RedirectResponse
 
 route = APIRouter()
 
-templates = Jinja2Templates(directory="templates")
+templates = settings.TEMPLATES
 
 crypt = CryptContext(schemes=["bcrypt"])
 
-oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
-
-access_token=dict()
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl=security.URL_LOGIN)
 
 @route.get("/login")
 async def login_form (request: Request):
-    return templates.TemplateResponse("views/login.html", {"request": request})
+    return templates.TemplateResponse("views/login.html", {"request": request, "form": ""})
 
 @route.post("/login")
-async def login_post (response: Response, form: OAuth2PasswordRequestForm = Depends()):
-    user_db = db_client.user.find_one({"email": form.username})
-    if not user_db:
-        raise HTTPException(status_code=400, detail="El usuario no es correcto")
-    
-    user = Usuario(**user_schema(user_db))
+async def login_post (response: Response, request: Request, form: OAuth2PasswordRequestForm = Depends()):
+    email = form.username
+    user_db = db_client.user.find_one({"email": email})
+    if user_db:
+        user = Usuario(**user_schema(user_db))
 
-    if not crypt.verify(form.password, user.password):
-        raise HTTPException(status_code=400, detail="La contraseña no es correcta")
+    if not user_db or not crypt.verify(form.password, user.password):
+        return templates.TemplateResponse("views/login.html",{"request": request, "form": form, "error": "Wrong password or user"})
 
-    expire = datetime.utcnow() + timedelta(minutes=Config.ACCESS_TOKEN_DURATION)
-    print(expire)
+    expire = datetime.utcnow() + timedelta(hours=security.ACCESS_TOKEN_DURATION)
+
+    request.session["user"] = user.name
+    request.session["role"] = user.role
 
     access_token = {"sub":user.email, "exp": expire}
-    response.set_cookie(key="access_token", value=f"Bearer {jwt.encode(access_token, Config.SECRET, algorithm=Config.ALGORITMO)}", httponly=True)
+    response.set_cookie(key="access_token", value=f"Bearer {jwt.encode(access_token, security.SECRET, algorithm=security.ALGORITMO)}", httponly=True)
 
     response.status_code= 303
-    response.headers["location"] = "/userdb"
+    response.headers["location"] = security.URL_SUCCESSFULLY_LOGIN
 
-oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/login")
+@route.get("/logout")
+async def logout(response: Response, request: Request):
+    response.delete_cookie("access_token")
+    request.session.clear()
+
+    response.status_code = 303
+    response.headers["location"] = security.URL_LOGIN
 
 async def auth_user(token: str = Depends(oauth2_scheme)):
 
-    exception = HTTPException(status_code=401, 
-            detail="Credenciales inválidas", 
-            headers={"WWW-Authenticate": "Bearer"})
+    exception = HTTPException(
+        status_code=303,
+        detail="Not authenticated",
+        headers={"location": security.URL_LOGIN},
+    )
 
     try:
-        username = jwt.decode(token, Config.SECRET, algorithms=[Config.ALGORITMO]).get("sub")
-        print("email is", username)
+        username = jwt.decode(token, security.SECRET, algorithms=[security.ALGORITMO]).get("sub")
         if username is None:
             raise exception
 
@@ -71,8 +78,4 @@ async def current_user (user: Usuario = Depends(auth_user)):
             detail="Usuario no activo", 
             headers={"WWW-Authenticate": "Bearer"})
 
-    return user
-
-@route.get("/me")
-async def me(user: Usuario = Depends(current_user)):
     return user

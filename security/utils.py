@@ -1,12 +1,12 @@
 from typing import Dict
 from typing import Optional
-
 from fastapi import HTTPException
 from fastapi import Request
 from fastapi import status
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
+from security.config import SecurityConfig as security
 
 
 class OAuth2PasswordBearerWithCookie(OAuth2):
@@ -33,9 +33,9 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         if not authorization or scheme.lower() != "bearer":
             if self.auto_error:
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    status_code=status.HTTP_303_SEE_OTHER,
                     detail="Not authenticated",
-                    headers={"WWW-Authenticate": "Bearer"},
+                    headers={"location":security.URL_LOGIN},
                 )
             else:
                 return None
