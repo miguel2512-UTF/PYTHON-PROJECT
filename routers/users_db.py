@@ -31,7 +31,7 @@ async def user_by_id (id: str):
 # Get - Create Form
 @route.get("/formcreate", response_class=HTMLResponse)
 async def form_create(request: Request):
-    return templates.TemplateResponse("views/user/create.html",{"request": request})
+    return templates.TemplateResponse("views/user/create.html",{"request": request, "errors":"", "user":""})
 
 # Get - Update Form
 @route.get("/formupdate/{id}", response_class=HTMLResponse)
@@ -41,7 +41,11 @@ async def form_update(id: str, request: Request):
 
 # Post - Crear
 @route.post("/create/", status_code=201)
-async def create_user (user: Usuario = Depends(Usuario.as_form)):
+async def create_user (request: Request, user: Usuario = Depends(Usuario.as_form)):
+    if Usuario.is_valid_user(user):
+        errors=Usuario.is_valid_user(user)
+        return templates.TemplateResponse("views/user/create.html",{"request":request, "errors": errors, "user": user})
+
     if type(buscar_usuario_por_columna(field="email", key=user.email)) == Usuario:
         raise HTTPException(status_code=404, detail="El usuario ya existe")
 

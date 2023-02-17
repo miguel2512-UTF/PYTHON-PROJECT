@@ -33,13 +33,7 @@ async def login_post (response: Response, request: Request, form: OAuth2Password
     if not user_db or not crypt.verify(form.password, user.password):
         return templates.TemplateResponse("views/login.html",{"request": request, "form": form, "error": "Wrong password or user"})
 
-    expire = datetime.utcnow() + timedelta(hours=security.ACCESS_TOKEN_DURATION)
-
-    request.session["user"] = user.name
-    request.session["role"] = user.role
-
-    access_token = {"sub":user.email, "exp": expire}
-    response.set_cookie(key="access_token", value=f"Bearer {jwt.encode(access_token, security.SECRET, algorithm=security.ALGORITMO)}", httponly=True)
+    create_token_and_session(response, request, user)
 
     response.status_code= 303
     response.headers["location"] = security.URL_SUCCESSFULLY_LOGIN
@@ -79,3 +73,12 @@ async def current_user (user: Usuario = Depends(auth_user)):
             headers={"WWW-Authenticate": "Bearer"})
 
     return user
+
+def create_token_and_session(response: Response, request: Request, user: Usuario):
+    expire = datetime.utcnow() + timedelta(hours=security.ACCESS_TOKEN_DURATION)
+
+    request.session["user"] = user.name
+    request.session["role"] = user.role
+
+    access_token = {"sub":user.email, "exp": expire}
+    response.set_cookie(key="access_token", value=f"Bearer {jwt.encode(access_token, security.SECRET, algorithm=security.ALGORITMO)}", httponly=True)

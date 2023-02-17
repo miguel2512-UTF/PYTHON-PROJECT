@@ -1,6 +1,7 @@
-fastapi==0.89.0
+fastapi
 python-jose
 passlib
 pymongo
 python-multipart
 jinja2
+itsdangerous
