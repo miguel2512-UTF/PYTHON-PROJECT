@@ -360,7 +360,11 @@ a{
         padding: 15px 0px;
     }
 
-    .form-group div,label{
+    .form-group label{
+        width: 50%;
+    }
+
+    .form-group div{
         width: 50%;
     }
 
@@ -709,7 +713,11 @@ a{
         padding: 15px 0px;
     }
 
-    .form-group div,label{
+    .form-group label{
+        width: 50%;
+    }
+
+    .form-group div{
         width: 50%;
     }
 

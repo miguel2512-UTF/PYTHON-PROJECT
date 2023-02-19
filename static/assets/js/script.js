@@ -9,7 +9,17 @@ btn_menu.addEventListener("click",()=>{
     header.classList.toggle("wrapper")
     content.classList.toggle("wrapper")
     footer.classList.toggle("wrapper")
+
+    if (menu.classList.contains("wrapper")) {
+        localStorage.setItem("sidebar", "off")
+    }else{
+        localStorage.setItem("sidebar", "on")
+    }
 })
+
+if (localStorage.getItem("sidebar") == "off") {
+    btn_menu.click()
+}
 
 let plus = document.querySelectorAll(".arrow")
         
@@ -32,7 +42,7 @@ function toggle(source) {
 
 checkboxes.forEach(boton => {
     boton.addEventListener('click', columnaToggle)
-    boton.click()
+    boton.checked=true
 })	
 
 function columnaToggle(e) {
@@ -40,25 +50,41 @@ function columnaToggle(e) {
         document.querySelectorAll(`.${e.target.id}`).forEach((element)=>{
             element.setAttribute('hidden','')
         })
+        localStorage.setItem(`${e.target.id}`, "false")
     }else{
         document.querySelectorAll(`.${e.target.id}`).forEach((element)=>{
             element.removeAttribute('hidden','')
         })
+        localStorage.setItem(`${e.target.id}`, "true")
     }
 }
 
-if (screen.width < 550) {
-    checkboxes.forEach(boton => {
-        boton.click()
-    })
+checkboxes.forEach((element)=>{
+    if (localStorage.getItem(element.id) == "true") {
+        document.querySelectorAll(`.${element.id}`).forEach((element)=>{
+            element.removeAttribute('hidden','')
+        })
+        document.getElementById(`${element.id}`).checked=true
+    }else{
+        document.querySelectorAll(`.${element.id}`).forEach((element)=>{
+            element.setAttribute('hidden','')
+        })
+        document.getElementById(`${element.id}`).checked=false
+    }
+})
 
-    document.querySelectorAll(`#name`).forEach((element)=>{
-        element.click()
-    })
-    document.querySelectorAll(`#state`).forEach((element)=>{
-        element.click()
-    })
-}
+// if (screen.width < 550) {
+//     checkboxes.forEach(boton => {
+//         boton.click()
+//     })
+
+//     document.querySelectorAll(`#name`).forEach((element)=>{
+//         element.click()
+//     })
+//     document.querySelectorAll(`#state`).forEach((element)=>{
+//         element.click()
+//     })
+// }
 
 let checkbox = document.getElementById('show');
 let row = document.querySelectorAll('#tablerow');
@@ -75,9 +101,15 @@ if (checkbox.checked==false) {
 function mostrar(){
     if (checkbox.checked==true) {
         rowBucle("",STATE_PARAM)
+        localStorage.setItem("showHidden", true)
     }else if (checkbox.checked==false){
         rowBucle("none",STATE_PARAM)
+        localStorage.setItem("showHidden", false)
     }
+}
+
+if (localStorage.getItem("showHidden") == "true") {
+   checkbox.click()
 }
 
 function rowBucle(display, state) {

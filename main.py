@@ -1,11 +1,10 @@
 from fastapi import FastAPI, Request, Depends
 from routers import products, users, users_db, login, home
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from routers.login import current_user
 from config.settings import Settings as settings
 from security.config import SecurityConfig as security
-from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.sessions import SessionMiddleware  
 
 app = FastAPI()
 
