@@ -13,6 +13,8 @@
     <link href="{{ url_for('static', path='assets/css/styles.css') }}" rel="stylesheet">
 </head>
 <body>
+    {% include "layouts/loader.html" ignore missing %}
+    
     {% include "layouts/sidebar.html" ignore missing %}
 
     {% include "layouts/header.html" ignore missing  %}
@@ -27,45 +29,37 @@
                     <div class="form-side">
                         <div class="form-group">
                             <label for="">Name</label>
-                            <div>
-                                <input type="text" name="name" value="{{ user.name }}" class="form-control" readonly>
-                                <div class="text-danger"></div>
-                            </div>
+                            <input type="text" name="name" value="{{ user.name }}" class="form-control" readonly>
+                            <div class="text-danger">{{ errors["name"] }}</div>
                         </div>
                         <div class="form-group">
                             <label for="">State</label>
-                            <div>
-                                <select name="state" id="" class="form-select">
-                                    {% if user.state %}
-                                    <option value="{{ user.state }}" selected>Active</option>
-                                    {% else %}
-                                    <option value="{{ user.state }}" selected>Inactive</option>
-                                    {% endif %}
-                                    <option value="True">Active</option>
-                                    <option value="False">Inactive</option>
-                                </select>
-                                <div class="text-danger"></div>
-                            </div>
+                            <select name="state" id="" class="form-select">
+                                {% if user.state %}
+                                <option value="{{ user.state }}" selected>Active</option>
+                                {% else %}
+                                <option value="{{ user.state }}" selected>Inactive</option>
+                                {% endif %}
+                                <option value="True">Active</option>
+                                <option value="False">Inactive</option>
+                            </select>
+                            <div class="text-danger">{{ errors["state"] }}</div>
                         </div>
                     </div>
                     <div class="form-side">
                         <div class="form-group">
                             <label for="">Email</label>
-                            <div>
-                                <input type="email" name="email" value="{{ user.email }}" class="form-control">
-                                <div class="text-danger"></div>
-                            </div>  
+                            <input type="email" name="email" value="{{ user.email }}" class="form-control">
+                            <div class="text-danger">{{ errors["email"] }}</div>
                         </div>
                         <div class="form-group">
                             <label for="">Role</label>
-                            <div>
-                                <select name="role" id="" class="form-select">
-                                    <option value="{{ user.role }}" selected>{{ user.role }}</option>
-                                    <option value="">Admin</option>
-                                    <option value="">User</option>
-                                </select>
-                                <div class="text-danger"></div>
-                            </div>
+                            <select name="role" id="" class="form-select">
+                                <option value="{{ user.role }}" selected>{{ user.role }}</option>
+                                <option value="">Admin</option>
+                                <option value="">User</option>
+                            </select>
+                            <div class="text-danger">{{ errors["role"] }}</div>  
                         </div>
                     </div>
                 </div>

@@ -1,3 +1,10 @@
+// Loader
+window.addEventListener("load",()=>{
+    const loader = document.querySelector(".loader-content")
+    loader.style.opacity = 0
+    loader.style.visibility = "hidden"
+})
+
 const btn_menu = document.querySelector(".bi-list")
 const menu = document.querySelector(".menu")
 const header = document.querySelector(".header")
@@ -60,6 +67,10 @@ function columnaToggle(e) {
 }
 
 checkboxes.forEach((element)=>{
+    if (localStorage.getItem(element.id) == null) {
+        localStorage.setItem(element.id, "true")
+    }
+
     if (localStorage.getItem(element.id) == "true") {
         document.querySelectorAll(`.${element.id}`).forEach((element)=>{
             element.removeAttribute('hidden','')

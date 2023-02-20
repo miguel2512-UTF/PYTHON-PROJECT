@@ -37,17 +37,22 @@ async def form_create(request: Request):
 @route.get("/formupdate/{id}", response_class=HTMLResponse)
 async def form_update(id: str, request: Request):
     user = user_schema_secure(db_client.user.find_one({"_id": ObjectId(id)}))
-    return templates.TemplateResponse("views/user/update.html",{"request":request, "user": user})
+    return templates.TemplateResponse("views/user/update.html",{"request":request, "errors":"", "user": user})
 
 # Post - Crear
 @route.post("/create/", status_code=201)
-async def create_user (request: Request, user: Usuario = Depends(Usuario.as_form)):
-    if Usuario.is_valid_user(user):
-        errors=Usuario.is_valid_user(user)
+async def create_user (request: Request):
+    user: Usuario = await Usuario.as_form(request)
+    errors=Usuario.is_valid_user(user, action="create")
+
+    if errors:
+        if type(buscar_usuario_por_columna(field="email", key=user.email)) == Usuario:
+            errors["email"]="Email is already in use"
         return templates.TemplateResponse("views/user/create.html",{"request":request, "errors": errors, "user": user})
 
     if type(buscar_usuario_por_columna(field="email", key=user.email)) == Usuario:
-        raise HTTPException(status_code=404, detail="El usuario ya existe")
+        errors["email"]="Email is already in use"
+        return templates.TemplateResponse("views/user/create.html",{"request":request, "errors": errors, "user": user})
 
     user_dict = dict(user)
     user_dict["password"] = crypt.encrypt(user_dict["password"])
@@ -60,8 +65,20 @@ async def create_user (request: Request, user: Usuario = Depends(Usuario.as_form
 
 # Post - Actualizar
 @route.post("/update")
-async def update_user (user: Usuario = Depends(Usuario.as_form_update)):
-    
+async def update_user (request: Request):
+    user: Usuario = await Usuario.as_form(request)
+    errors = Usuario.is_valid_user(user, action="update")
+    email_user = buscar_usuario_por_columna(field="email", key=user.email)
+
+    if errors:
+        if type(email_user) == Usuario and user.id != email_user.id:
+            errors["email"]="Email is already in use"
+        return templates.TemplateResponse("views/user/update.html",{"request":request, "errors": errors, "user": user})
+
+    if type(email_user) == Usuario and user.id != email_user.id:
+        errors["email"]="Email is already in use"
+        return templates.TemplateResponse("views/user/update.html",{"request":request, "errors": errors, "user": user})
+
     user_dict = dict(user)
     password = user_schema(db_client.user.find_one({"_id": ObjectId(user.id)}))["password"]
     user_dict["password"] = password
@@ -78,7 +95,6 @@ async def update_user (user: Usuario = Depends(Usuario.as_form_update)):
 @route.get("/changestate/{id}", status_code=204)
 async def toggle_state(id: str):
     user = user_schema(db_client.user.find_one({"_id":ObjectId(id)}))
-    print(user)
 
     if user["state"] :
         user["state"] = False

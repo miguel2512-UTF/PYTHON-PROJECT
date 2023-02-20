@@ -13,6 +13,8 @@
     <link href="{{ url_for('static', path='assets/css/styles.css') }}" rel="stylesheet">
 </head>
 <body>
+    {% include "layouts/loader.html" ignore missing %}
+    
     {% include "layouts/sidebar.html" ignore missing %}
 
     {% include "layouts/header.html" ignore missing  %}
@@ -26,70 +28,60 @@
                     <div class="form-side">
                         <div class="form-group">
                             <label for="">Name</label>
-                            <div>
-                                <input type="text" name="name" class="form-control" autocomplete="off" value="{{ user.name }}">
-                                <div class="text-danger">{{ errors["name"] }} </div>
-                            </div>
+                            <input type="text" name="name" class="form-control" autocomplete="off" value="{{ user.name }}">
+                            <div class="text-danger">{{ errors["name"] }}</div>
                         </div>
                         <div class="form-group">
                             <label for="">Password</label>
-                            <div>
-                                <input type="password" name="password" class="form-control" value="{{ user.password }}">
-                                <div class="text-danger">{{ errors["password"] }} </div>
-                            </div>
+                            <input type="password" name="password" class="form-control" value="{{ user.password }}">
+                            <div class="text-danger">{{ errors["password"] }}</div>
                         </div>
                         <div class="form-group">
                             <label for="">State</label>
-                            <div>
-                                <select name="state" id="" class="form-select">
-                                    <option value="{{ user.state }}" selected>Select</option>
-                                    {% if user.state == True %}
-                                        <option value="True" selected>Active</option>
-                                        <option value="False">Inactive</option>
-                                    {% elif user.state == False %}
-                                        <option value="True">Active</option>
-                                        <option value="False" selected>Inactive</option>
-                                    {% endif %}
-                                    {% if not user %}
-                                        <option value="True">Active</option>
-                                        <option value="False">Inactive</option>
-                                    {% endif %}
-                                </select>
-                                <div class="text-danger">{{ errors["state"] }} </div>
-                            </div>
+                            <select name="state" id="" class="form-select">
+                                <option value="" selected>Select</option>
+                                {% if user.state == True %}
+                                    <option value="True" selected>Active</option>
+                                    <option value="False">Inactive</option>
+                                {% elif user.state == False %}
+                                    <option value="True">Active</option>
+                                    <option value="False" selected>Inactive</option>
+                                {% endif %}
+                                {% if not user %}
+                                    <option value="True">Active</option>
+                                    <option value="False">Inactive</option>
+                                {% endif %}
+                            </select>
+                            <div class="text-danger">{{ errors["state"] }}</div>
                         </div>
                     </div>
                     <div class="form-side">
                         <div class="form-group">
                             <label for="">Email</label>
-                            <div>
-                                <input type="email" name="email" class="form-control" value="{{ user.email }}">
-                                <div class="text-danger">{{ errors["email"] }} </div>
-                            </div>
+                            <input type="email" name="email" class="form-control" value="{{ user.email }}">
+                            <div class="text-danger">{{ errors["email"] }}</div>
                         </div>
                         <div class="form-group">
                             <label for="">Role</label>
-                            <div>
-                                <select name="role" id="" class="form-select">
-                                    <option value="" selected>
-                                        {% if user.role != "admin" or "user" %}
-                                            Select
-                                        {% endif %}
-                                    </option>
-                                    {% if user.role == "admin" %}
-                                        <option value="admin" selected>Admin</option>
-                                        <option value="user">User</option>
-                                    {% elif user.role == "user" %}
-                                        <option value="admin">Admin</option>
-                                        <option value="user" selected>User</option>
+                            <select name="role" id="" class="form-select">
+                                <option value="" selected>
+                                    {% if user.role != "admin" or "user" %}
+                                        Select
                                     {% endif %}
-                                    {% if not user  or user.role != "admin" and user.role != "user" %}
-                                        <option value="admin">Admin</option>
-                                        <option value="user">User</option>
-                                    {% endif %}
-                                </select>
-                                <div class="text-danger">{{ errors["role"] }} </div>
-                            </div>
+                                </option>
+                                {% if user.role == "admin" %}
+                                    <option value="admin" selected>Admin</option>
+                                    <option value="user">User</option>
+                                {% elif user.role == "user" %}
+                                    <option value="admin">Admin</option>
+                                    <option value="user" selected>User</option>
+                                {% endif %}
+                                {% if not user  or user.role != "admin" and user.role != "user" %}
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                {% endif %}
+                            </select>
+                            <div class="text-danger">{{ errors["role"] }}</div>
                         </div>
                     </div>
                 </div>

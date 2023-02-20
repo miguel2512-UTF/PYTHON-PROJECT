@@ -1,11 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional
-from fastapi import Form
+from fastapi import Form, Request
 from db.models.validation import is_valid
+from config import messages
 
 NAME_REGEXP=r"[A-Za-zÀ-ÿ]{2,10}[\s]{0,1}[A-Za-zÀ-ÿ]{2,10}"
 EMAIL_REGEXP=r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})"
-PASSWROD_REGEXP=f"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+PASSWROD_REGEXP=r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
         
 # Entidad Usuario
 class Usuario(BaseModel):
@@ -16,49 +17,61 @@ class Usuario(BaseModel):
     role: str
     state: bool
     
-    @classmethod
-    def as_form(
-        cls,
-        name: str = Form(...),
-        email: str = Form(...),
-        password: str = Form(...),
-        role: str = Form(...),
-        state: bool = Form(...)
+    async def as_form(
+        request: Request 
     ):
-        return cls(
-            name = name,
-            email = email,
-            password = password,
-            role = role,
-            state = state
+        form = await request.form()
+        id = form.get("id")
+        name = form.get("name")
+        email = form.get("email")
+        password = form.get("password")
+        role = form.get("role")
+        state = form.get("state")
+        if len(state)==0 or state.lower()=="true":
+            state=True
+        else:
+            state=False
+
+        return Usuario(
+            id=id,
+            name=name,
+            email=email,
+            password=password,
+            role=role,
+            state=state
         )
     
-    @classmethod
-    def as_form_update(
-        cls,
-        id: str = Form(...),
-        name: str = Form(...),
-        email: str = Form(...),
-        role: str = Form(...),
-        state: bool = Form(...)
-    ):
-        return cls(
-            id = id,
-            name = name,
-            email = email,
-            role = role,
-            state = state
-        )
-    
-    def is_valid_user(user):
+    def is_valid_user(user, action: str):
         error={}
-        if not is_valid(NAME_REGEXP, user.name):
-            error["name"]="Wrong name"
-        if not is_valid(EMAIL_REGEXP, user.email):
-            error["email"]="Wrong email"
-        if not is_valid(PASSWROD_REGEXP, user.password):
-            error["password"]="Wrong password"
-        if not user.role == "admin" and not user.role == "user":
-            error["role"]="Wrong role"
+        if action == "create":
+            if len(user.name)==0:
+                error["name"]=messages.msg_field_required("name")
+            elif not is_valid(NAME_REGEXP, user.name):
+                error["name"]=messages.MSG_USER_NAME
+            if len(user.email)==0:
+                error["email"]=messages.msg_field_required("email")
+            elif not is_valid(EMAIL_REGEXP, user.email):
+                error["email"]=messages.MSG_USER_EMAIL
+            if len(user.password)==0:
+                error["password"]=messages.msg_field_required("password")
+            elif not is_valid(PASSWROD_REGEXP, user.password):
+                error["password"]=messages.MSG_USER_PASSWORD
+            if len(user.role)==0:
+                error["role"]=messages.msg_field_required("role")
+            elif not user.role == "admin" and not user.role == "user":
+                error["role"]=messages.MSG_USER_ROLE
+        elif action == "update":
+            if len(user.name)==0:
+                error["name"]=messages.msg_field_required("name")
+            elif not is_valid(NAME_REGEXP, user.name):
+                error["name"]=messages.MSG_USER_NAME
+            if len(user.email)==0:
+                error["email"]=messages.msg_field_required("email")
+            elif not is_valid(EMAIL_REGEXP, user.email):
+                error["email"]=messages.MSG_USER_EMAIL
+            if len(user.role)==0:
+                error["role"]=messages.msg_field_required("role")
+            elif not user.role == "admin" and not user.role == "user":
+                error["role"]=messages.MSG_USER_ROLE
 
         return error
