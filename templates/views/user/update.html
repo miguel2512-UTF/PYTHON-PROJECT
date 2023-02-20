@@ -55,9 +55,9 @@
                         <div class="form-group">
                             <label for="">Role</label>
                             <select name="role" id="" class="form-select">
-                                <option value="{{ user.role }}" selected>{{ user.role }}</option>
-                                <option value="">Admin</option>
-                                <option value="">User</option>
+                                <option value="{{ user.role }}" selected>{{ user.role.capitalize() }}</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
                             </select>
                             <div class="text-danger">{{ errors["role"] }}</div>  
                         </div>

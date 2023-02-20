@@ -43,35 +43,22 @@ class Usuario(BaseModel):
     
     def is_valid_user(user, action: str):
         error={}
-        if action == "create":
-            if len(user.name)==0:
-                error["name"]=messages.msg_field_required("name")
-            elif not is_valid(NAME_REGEXP, user.name):
-                error["name"]=messages.MSG_USER_NAME
-            if len(user.email)==0:
-                error["email"]=messages.msg_field_required("email")
-            elif not is_valid(EMAIL_REGEXP, user.email):
-                error["email"]=messages.MSG_USER_EMAIL
+        if len(user.name)==0:
+            error["name"]=messages.msg_field_required("name")
+        elif not is_valid(NAME_REGEXP, user.name):
+            error["name"]=messages.MSG_USER_NAME
+        if len(user.email)==0:
+            error["email"]=messages.msg_field_required("email")
+        elif not is_valid(EMAIL_REGEXP, user.email):
+            error["email"]=messages.MSG_USER_EMAIL
+        if not action == "update":
             if len(user.password)==0:
                 error["password"]=messages.msg_field_required("password")
             elif not is_valid(PASSWROD_REGEXP, user.password):
                 error["password"]=messages.MSG_USER_PASSWORD
-            if len(user.role)==0:
-                error["role"]=messages.msg_field_required("role")
-            elif not user.role == "admin" and not user.role == "user":
-                error["role"]=messages.MSG_USER_ROLE
-        elif action == "update":
-            if len(user.name)==0:
-                error["name"]=messages.msg_field_required("name")
-            elif not is_valid(NAME_REGEXP, user.name):
-                error["name"]=messages.MSG_USER_NAME
-            if len(user.email)==0:
-                error["email"]=messages.msg_field_required("email")
-            elif not is_valid(EMAIL_REGEXP, user.email):
-                error["email"]=messages.MSG_USER_EMAIL
-            if len(user.role)==0:
-                error["role"]=messages.msg_field_required("role")
-            elif not user.role == "admin" and not user.role == "user":
-                error["role"]=messages.MSG_USER_ROLE
+        if len(user.role)==0:
+            error["role"]=messages.msg_field_required("role")
+        elif not user.role == "admin" and not user.role == "user":
+            error["role"]=messages.MSG_USER_ROLE
 
         return error
