@@ -100,6 +100,7 @@ a{
         flex-direction: column;
         justify-content: center;
         padding: 50px;
+        animation: traslateX 1s;
     }
     
     .aside-content a{
@@ -126,6 +127,7 @@ a{
     
     .aside img{
         width: 700px;
+        animation: traslateY 1s;
     }
     
     .services{
@@ -198,6 +200,7 @@ a{
         display: flex;
         height: 100vh;
         background: linear-gradient(90deg, rgba(48,65,155,1) 43%, rgba(100,113,180,1) 100%);
+        overflow: hidden;
     }
     
     .login-content img{
@@ -209,6 +212,7 @@ a{
         justify-content: center;
         align-items: center;
         width: 50%;
+        animation: traslate 1s;
     }
     
     .form-content{
@@ -216,6 +220,7 @@ a{
         justify-content: center;
         align-items: center;
         width: 50%;
+        animation: traslateY 1s;
     }
     
     .form-content form{
@@ -789,5 +794,27 @@ a{
     .btn-primary:hover{
         background-color: #243174;
         border: var(#243174);
+    }
+}
+
+/* Animations */
+@keyframes traslateY {
+    0%{
+        transform: translateY(100px);
+        opacity: 0;
+    }
+}
+
+@keyframes traslateX {
+    0%{
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+}
+
+@keyframes traslate {
+    0% {
+        transform: translateX(100px);
+        opacity: 0;
     }
 }

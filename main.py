@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request, Depends
 from routers import products, users, users_db, login, home
 from fastapi.staticfiles import StaticFiles
-from routers.login import current_user
+from routers.login import current_user, is_admin
 from config.settings import Settings as settings
 from security.config import SecurityConfig as security
-from starlette.middleware.sessions import SessionMiddleware  
+from starlette.middleware.sessions import SessionMiddleware
 
 app = FastAPI()
 
@@ -12,15 +12,15 @@ app.add_middleware(SessionMiddleware, secret_key=security.SECRET)
 
 templates = settings.TEMPLATES
 
-# Add dependence for verify role
-PROTECT = [Depends(current_user)]
+IS_AUTHENTICATED = [Depends(current_user)]
+IS_ADMIN = [Depends(is_admin)]
 
 # Routers
 app.include_router(products.route)
 app.include_router(users.route)
-app.include_router(users_db.route, dependencies=PROTECT)
+app.include_router(users_db.route, dependencies=IS_ADMIN)
 app.include_router(login.route)
-app.include_router(home.route, dependencies=PROTECT)
+app.include_router(home.route, dependencies=IS_AUTHENTICATED)
 app.mount("/static", StaticFiles(directory = "static"), name="static")
 
 @app.get("/")

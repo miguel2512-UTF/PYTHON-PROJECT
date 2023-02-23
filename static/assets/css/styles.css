@@ -120,8 +120,9 @@ a{
         width: 100%;
         padding: 10px 25px;
         transition: 0.3s;
+        position: relative;
     }
-    
+
     .menu .menu-options .option:hover{
         transition: 0.5s;
         background-color: white;
@@ -129,6 +130,9 @@ a{
     
     .menu .menu-options .option:hover span{
         color: var(--primary);
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
     }
     
     .menu .menu-options .option:hover a{
@@ -153,6 +157,8 @@ a{
     .menu .menu-options .option span{
         font-size: 18px;
         color: white;
+        position: absolute;
+        left: 65px;
     }
     
     .option .arrow{
@@ -329,7 +335,7 @@ a{
         z-index: 2;
         color: white;
         background-color: var(--primary);
-        transition: all 0.5s ease;
+        transition: width 0.5s ease;
     }
     
     .menu.wrapper .title{
@@ -346,7 +352,7 @@ a{
         opacity: 100;
         transition: all 0.5s ease;
     }
-    
+
     .menu.wrapper .option{
         padding: 10px 0;
     }
@@ -366,8 +372,14 @@ a{
     }
     
     .menu.wrapper .option span{
-        display: none;
-        transition: all 0.5s ease;
+        opacity: 0;
+        visibility: hidden;
+        left: 100%;
+        padding: 5px;
+        background-color: #fff;
+        transform: translateY(-20px);
+        transition: opacity 0s ease;
+        transition: transform 0.5s ease;
     }
     
     .menu.wrapper .options-list{
@@ -478,6 +490,7 @@ a{
         width: 100%;
         padding: 5px 20px;
         transition: 0.3s;
+        position: relative;
     }
     
     .menu .menu-options .option:hover{
@@ -487,6 +500,9 @@ a{
     
     .menu .menu-options .option:hover span{
         color: var(--primary);
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
     }
     
     .menu .menu-options .option:hover a{
@@ -511,6 +527,8 @@ a{
     .menu .menu-options .option span{
         font-size: 14px;
         color: white;
+        position: absolute;
+        left: 55px;
     }
     
     .option .arrow{
@@ -689,7 +707,7 @@ a{
         z-index: 2;
         color: white;
         background-color: var(--primary);
-        transition: all 0.5s ease;
+        transition: width 0.5s ease;
     }
     
     .menu.wrapper .title{
@@ -726,8 +744,14 @@ a{
     }
     
     .menu.wrapper .option span{
-        display: none;
-        transition: all 0.5s ease;
+        opacity: 0;
+        visibility: hidden;
+        left: 100%;
+        padding: 5px;
+        background-color: #fff;
+        transform: translateY(-20px);
+        transition: opacity 0s ease;
+        transition: transform 0.5s ease;
     }
     
     .menu.wrapper .options-list{

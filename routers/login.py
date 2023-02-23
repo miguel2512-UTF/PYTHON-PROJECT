@@ -9,7 +9,6 @@ from db.schemas.user import user_schema, user_schema_secure
 from security.utils import OAuth2PasswordBearerWithCookie
 from security.config import SecurityConfig as security
 from config.settings import Settings as settings
-from fastapi.responses import RedirectResponse
 
 route = APIRouter()
 
@@ -72,6 +71,14 @@ async def current_user (user: Usuario = Depends(auth_user)):
             detail="Usuario no activo", 
             headers={"WWW-Authenticate": "Bearer"})
 
+    return user
+
+async def is_admin (user: Usuario = Depends(current_user)):
+
+    if not user.role == "admin":
+        raise HTTPException(status_code=400,
+            detail="You dont have permissions")
+    
     return user
 
 def create_token_and_session(response: Response, request: Request, user: Usuario):
