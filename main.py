@@ -5,8 +5,9 @@ from routers.login import current_user, is_admin
 from config.settings import Settings as settings
 from security.config import SecurityConfig as security
 from starlette.middleware.sessions import SessionMiddleware
+from config.exception_handler import exception
 
-app = FastAPI()
+app = FastAPI(exception_handlers=exception)
 
 app.add_middleware(SessionMiddleware, secret_key=security.SECRET)
 

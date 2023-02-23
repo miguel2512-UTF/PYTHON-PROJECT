@@ -67,7 +67,7 @@ async def auth_user(token: str = Depends(oauth2_scheme)):
 async def current_user (user: Usuario = Depends(auth_user)):
 
     if not user.state:
-        raise HTTPException(status_code=400, 
+        raise HTTPException(status_code=423, 
             detail="Usuario no activo", 
             headers={"WWW-Authenticate": "Bearer"})
 
@@ -76,7 +76,7 @@ async def current_user (user: Usuario = Depends(auth_user)):
 async def is_admin (user: Usuario = Depends(current_user)):
 
     if not user.role == "admin":
-        raise HTTPException(status_code=400,
+        raise HTTPException(status_code=403,
             detail="You dont have permissions")
     
     return user

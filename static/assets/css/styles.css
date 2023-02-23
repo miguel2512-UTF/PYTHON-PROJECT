@@ -1124,6 +1124,37 @@ a{
     }
 }
 
+/* Errors */
+.content-error{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.error-body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.error-body .status{
+    font-size: 9em;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.error-body .desc{
+    font-size: 2em;
+    text-transform: capitalize;
+}
+
+.error-body .message{
+    text-align: center;
+    font-size: 1.1rem;
+}
+
 /* Utils */
 .btn-primary{
     background-color: var(--primary);

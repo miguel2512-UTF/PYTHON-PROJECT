@@ -8,6 +8,7 @@
                 <span>Home</span>
             </a>
         </div>
+        {% if request.session.get("role") == "admin" %}
         <div class="option">
             <a href="/userdb">
                 <i class="bi bi-people"></i>
@@ -18,6 +19,7 @@
                 <a href="/userdb/formcreate">Create</a>
             </div>
         </div>
+        {% endif %}
         <div class="option"> 
             <a href="">
                 <i class="bi bi-cart"></i>
