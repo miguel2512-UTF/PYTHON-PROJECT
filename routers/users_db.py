@@ -1,16 +1,15 @@
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, Request
 from db.models.user import Usuario
 from db.client import db_client
 from db.schemas.user import user_schema_secure, user_schema, users_schema
 from bson import ObjectId
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
-from routers.login import current_user
 from passlib.context import CryptContext
+from config.settings import Settings
 
 route = APIRouter(prefix="/userdb", tags=["userdb"])
 
-templates = Jinja2Templates(directory="templates")
+templates = Settings.TEMPLATES
 
 crypt = CryptContext(schemes=["bcrypt"])
 

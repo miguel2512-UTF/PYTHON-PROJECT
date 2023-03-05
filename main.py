@@ -17,7 +17,7 @@ IS_AUTHENTICATED = [Depends(current_user)]
 IS_ADMIN = [Depends(is_admin)]
 
 # Routers
-app.include_router(products.route)
+app.include_router(products.route, dependencies=IS_AUTHENTICATED)
 app.include_router(users.route)
 app.include_router(users_db.route, dependencies=IS_ADMIN)
 app.include_router(login.route)

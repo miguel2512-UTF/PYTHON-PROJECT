@@ -59,7 +59,10 @@ async def auth_user(token: str = Depends(oauth2_scheme)):
             raise exception
 
     except JWTError:
-        raise exception
+        raise HTTPException(
+            status_code=303,
+            headers={"location": "/logout"}
+        )
 
     user = db_client.user.find_one({"email": username})
     return Usuario(**user_schema_secure(user))
