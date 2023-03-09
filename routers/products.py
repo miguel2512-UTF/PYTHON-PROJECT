@@ -68,8 +68,9 @@ async def create_product (request: Request, file: UploadFile = File(...)):
     # Save us the image
     # Guardamos la imagen
     try:
-        with open(Settings.PRODUCT_IMAGES_DIRECTORY+imagename, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        if not len(file.filename) == 0:
+            with open(Settings.PRODUCT_IMAGES_DIRECTORY+imagename, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
     finally:
         file.file.close()
 
