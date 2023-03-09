@@ -7,6 +7,7 @@
     <title>Products</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <!-- Icons -->
+    <script src="https://kit.fontawesome.com/6131ecdde6.js"></script>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <!-- Styles -->
@@ -30,7 +31,7 @@
                 </div>
                 <div class="search">
                     <label for="">Search:</label>
-                    <input type="search" class="search-input">
+                    <input type="search" class="search-input" id="search-product">
                 </div>
             </div>
             <div class="btn-group" role="group" aria-label="Basic example">
@@ -39,20 +40,20 @@
                     <button class="btn btn-sm btn-primary btn-square dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Show Columns
                     </button>
-                    <div class="dropdown-menu">
+                    <!-- <div class="dropdown-menu">
                         <a class="dropdown-item"><input class="form-check-input" type="checkbox" name="col" id="id"> ID</a>
                         <a class="dropdown-item"><input class="form-check-input" type="checkbox" name="col" id="name"> Name</a>
                         <a class="dropdown-item"><input class="form-check-input" type="checkbox" name="col" id="email"> Email</a>
                         <a class="dropdown-item"><input class="form-check-input" type="checkbox" name="col" id="role"> Role</a>
                         <a class="dropdown-item"><input class="form-check-input" type="checkbox" name="col" id="state"> State</a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
             <div class="product-list">
                 <div class="product-card create">
                     <div class="add-product">
-                        <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <button type="button" class="btn-add" data-bs-toggle="modal" data-bs-target="#modal-add">
                             <i class='bx bx-plus-circle'></i>
                             <p>Add Product</p>
                         </button>
@@ -62,46 +63,51 @@
                 <div class="product-card">
                     <div class="img-container">
                         <img src="{{ url_for('static', path='assets/product_images/') }}{{ product.image }}" alt="">
-                        <div class="image">
+                        <div class="stock-backdrop">
                         </div>
                         <div class="stock">
                             <p>{{ product.stock }} Und</p>
                         </div>
-                    </div>
-                    <div class="product-body">
-                        <h1 class="title">{{ product.name }}</h1>
-                        <p class="product-price">{{ product.price }}</p>
-                        <p class="product-desc">{{ product.description }}</p> 
                         {% if product.state %}
                             <span class="badge rounded-pill text-bg-success" id="stateUser"><div class="align f-14"><i class="bi bi-check-circle-fill mr-5"></i></i>Public</div></span> 
                         {% else %}
                             <span class="badge rounded-pill text-bg-warning" id="stateUser"><div class="align f-14"><i class="bi bi-exclamation-circle-fill mr-5"></i></i>Private</div></span>
                         {% endif %}
                     </div>
-                    <div class="product-footer">
-                        <a href="/userdb/formupdate/" class="btn btn-primary btn-sm btn-circular mr-5"><i class="bi bi-pencil-square"></i></a>
+                    <div class="product-body">
+                        <h1 class="title">{{ product.name }}</h1>
+                        <p class="product-price">{{ product.price }}</p>
+                        <p class="product-desc">{{ product.description }}</p> 
+                    </div>
+                    <div class="product-footer align">
+                        <a href="/product/search/{{ product.code }}" class="btn btn-primary btn-sm btn-circular mr-5 btn-edit" action="edit"><i class="bi bi-pencil-square"></i></a>
                         <a href="" class="btn btn-secondary btn-sm btn-circular mr-5"><i class="bi bi-trash"></i></a>
-                        <!-- <a href="changestate/" class="form-switch" style="cursor: auto;">
+                        <a href="changestate/{{ product.id }}" class="form-switch" style="cursor: auto;">
+                            {% if product.state %}
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked>
+                            {% else %}
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                        </a> -->
+                            {% endif %}
+                        </a>
                     </div>
                 </div>
                 {% endfor %}
             </div> 
+
+            <a href="/product/search/" class="btn btn-primary btn-search" action="search" hidden>Search</a>
         </div>
     </div>
   
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <!-- Modal Add -->
+    <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Create Product</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="/product/create" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
+                <form action="/product/create" method="post" enctype="multipart/form-data">
                     <div class="form-modal-group">
                         <label for="">Name</label>
                         <input type="text" name="name" class="form-control">
@@ -109,7 +115,7 @@
                     </div>
                     <div class="form-modal-group">
                         <label for="">Description</label>
-                        <input type="text" name="description" class="form-control">
+                        <textarea type="text" name="description" class="form-control"></textarea>
                         <div class="text-danger"></div>
                     </div>
                     <div class="form-modal-group">
@@ -124,7 +130,8 @@
                     </div>
                     <div class="form-modal-group">
                         <label for="">Image</label>
-                        <input type="file" name="file" class="form-control" accept="image/*">
+                        <img id="image-preview">
+                        <input type="file" name="file" id="file" class="form-control" accept="image/*">
                         <div class="text-danger"></div>
                     </div>
                     <div class="form-modal-group">
@@ -146,9 +153,185 @@
         </div>
     </div>
 
+    <!-- Info Modal -->
+    <div class="modal fade" id="modal-info" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="code">Product</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="" alt="" id="img-product">
+                    <div class="form-modal-group">
+                        <label for="" class="bold">State</label>
+                        <span class="badge rounded-pill text-bg-success" id="statePublic" hidden><div class="align f-14"><i class="bi bi-check-circle-fill mr-5"></i></i>Public</div></span> 
+                        <span class="badge rounded-pill text-bg-warning" id="statePrivate" hidden><div class="align f-14"><i class="bi bi-exclamation-circle-fill mr-5"></i></i>Private</div></span>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="" class="bold">Name</label>
+                        <p id="name"></p>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="" class="bold">Price</label>
+                        <p id="price"></p>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="" class="bold">Description</label>
+                        <p id="desc"></p>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="" class="bold">Stock</label>
+                        <p id="stock"></p>
+                    </div>
+                    <div class="form-modal-group">
+                        <a href="/product/search/" class="btn btn-primary btn-edit" action="edit" data-bs-toggle="modal" data-bs-target="#modal-edit">Edit</a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div class="modal fade" id="modal-edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Product</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                <form action="/product/update" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="id" id="id">
+                    <div class="form-modal-group">
+                        <label for="">Image</label>
+                        <div id="carouselExample" class="carousel slide">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <div class="img-container">
+                                    <img src="" alt="" id="img-product">
+                                    <button class="btn btn-primary"><i class="fa-solid fa-x"></i></button>
+                                </div>
+                              </div>
+                              <div class="carousel-item">
+                                <div class="img-container">
+                                    <img src="" alt="" id="img-product">
+                                    <button class="btn btn-primary"><i class="fa-solid fa-x"></i></button>
+                                </div>
+                              </div>
+                              <div class="carousel-item">
+                                <div class="img-container">
+                                    <img src="" alt="" id="img-product">
+                                    <button class="btn btn-primary"><i class="fa-solid fa-x"></i></button>
+                                </div>
+                              </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                                <i class='bx bx-chevron-left'></i>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                                <i class='bx bx-chevron-right'></i>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                        <input type="file" name="file" id="image" class="form-control" accept="image/*">
+                        <div class="text-danger"></div>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="">Name</label>
+                        <input type="text" name="name" id="name" class="form-control">
+                        <div class="text-danger"></div>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="">Description</label>
+                        <textarea type="text" name="description" id="description" class="form-control"></textarea>
+                        <div class="text-danger"></div>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="">Price</label>
+                        <input type="text" name="price" id="price" class="form-control">
+                        <div class="text-danger"></div>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="">Stock</label>
+                        <input type="number" name="stock" id="stock" class="form-control">
+                        <div class="text-danger"></div>
+                    </div>
+                    <div class="form-modal-group">
+                        <label for="">State</label>
+                        <select name="state" class="form-select">
+                            <option value="" id="state">Select</option>
+                            <option value="True">Public</option>
+                            <option value="False">Private</option>
+                        </select>
+                        <div class="text-danger"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <p>FastAPI by miguel2512 | Copyright &copy 2023</p>
     </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('.btn-search, .btn-edit').on('click', function(event) {
+                event.preventDefault();
+                var href = $(this).attr('href');
+                var action = $(this).attr('action');
+
+                $.get(href, function (product, status) {
+                    if (action == "search") {
+                        $('#modal-info #code').text(`Product ${product.code}`)
+                        $('#modal-info #img-product').attr("src", `{{ url_for('static', path='assets/product_images/') }}${product.image}`)
+                        if (product.state) {
+                            $('#statePublic').removeAttr("hidden")
+                            $('#statePrivate').attr("hidden","")
+                        }else{
+                            $('#statePrivate').removeAttr("hidden")
+                            $('#statePublic').attr("hidden","")
+                        }
+                        $('#modal-info #name').text(`${product.name}`)
+                        $('#modal-info #price').text(`${product.price}`)
+                        $('#modal-info #desc').text(`${product.description}`)
+                        $('#modal-info #stock').text(`${product.stock}`)
+                        $('#modal-info .btn-edit').attr("href", `/product/search/${product.code}`)
+                        $('#modal-info').modal("show")
+                    }else if (action == "edit") {
+                        $('#modal-edit #id').val(product.id)
+                        $('#modal-edit #name').val(product.name)
+                        $('#modal-edit #description').val(product.description)
+                        $('#modal-edit #price').val(product.price)
+                        $('#modal-edit #stock').val(product.stock)
+                        $('#modal-edit #img-product').attr("src", `{{ url_for('static', path='assets/product_images/') }}${product.image}`)
+                        // $('#form-edit #image').val(product.image)
+                        if (product.state) {
+                            $('#modal-edit #state').text("Public") 
+                            $('#modal-edit #state').val("True")
+                        }else{
+                            $('#modal-edit #state').text("Private") 
+                            $('#modal-edit #state').val("False")
+                        }
+                        $('#modal-edit #state').attr('selected','')
+                        $('#modal-edit').modal("show")
+                    }
+                })
+            });
+        });
+    </script>
     
     <script>
         const stock = document.querySelectorAll(".stock")
@@ -163,6 +346,28 @@
             format_price = new Intl.NumberFormat('es-ES').format(element.textContent);
             element.textContent = format_price
         })
+
+        let search = document.getElementById("search-product")
+        let btn_search = document.querySelector(".btn-search")
+        
+        search.addEventListener("keypress", (e)=>{
+            if (e.key === "Enter") {
+                btn_search.setAttribute("href", `/product/search/${e.target.value}`)
+                btn_search.click()
+            }
+        })
+
+        function showPreview(event){
+            if(event.target.files.length > 0){
+                let src = URL.createObjectURL(event.target.files[0]);
+                let preview = document.getElementById("image-preview");
+                preview.src = src;
+                preview.style.display = "block";
+            }
+        }
+
+        input_file = document.querySelector("#modal-add #file")
+        input_file.addEventListener("change", showPreview)
     </script>
     <script src="{{ url_for('static', path='assets/js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>

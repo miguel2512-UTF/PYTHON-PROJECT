@@ -4,6 +4,7 @@ from fastapi import Request, File
 
 class Product(BaseModel):
     id: Optional[str]
+    code: Optional[str]
     name: str
     description: str
     price: int

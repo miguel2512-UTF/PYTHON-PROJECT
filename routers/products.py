@@ -24,9 +24,9 @@ async def products_list (request: Request):
     return templates.TemplateResponse("views/product/product.html",{"request": request, "products": products})
 
 # Path
-@route.get("/search/{id}")
-async def product_by_id (id: str):
-    return buscar_Product_por_columna("_id", ObjectId(id))
+@route.get("/search/{code}")
+async def product_by_id (code: str):
+    return buscar_product_por_columna("code", code.upper())
 
 # Get - Create Form
 @route.get("/formcreate", response_class=HTMLResponse)
@@ -47,16 +47,18 @@ async def create_product (request: Request, file: UploadFile = File(...)):
 
     """
     if errors:
-        if type(buscar_Product_por_columna(field="email", key=product.email)) == Product:
+        if type(buscar_product_por_columna(field="email", key=product.email)) == Product:
             errors["email"]="Email is already in use"
         return templates.TemplateResponse("views/product/create.html",{"request":request, "errors": errors, "product": product})
 
-    if type(buscar_Product_por_columna(field="email", key=product.email)) == Product:
+    if type(buscar_product_por_columna(field="email", key=product.email)) == Product:
         errors["email"]="Email is already in use"
         return templates.TemplateResponse("views/product/create.html",{"request":request, "errors": errors, "product": product})
     """ 
 
     product_dict = dict(product)
+    # We generate the product code
+    product_dict["code"] = f"P00{len(products_schema(list(db_client.product.find())))+1}"
 
     # We created the product and we take the id 
     id_product = db_client.product.insert_one(product_dict).inserted_id
@@ -86,21 +88,23 @@ async def create_product (request: Request, file: UploadFile = File(...)):
 @route.post("/update")
 async def update_product (request: Request):
     product: Product = await Product.as_form(request)
-    errors = Product.is_valid_product(product, action="update")
-    email_product = buscar_Product_por_columna(field="email", key=product.email)
+    # errors = Product.is_valid_product(product, action="update")
+    # email_product = buscar_product_por_columna(field="email", key=product.email)
 
-    if errors:
-        if type(email_product) == Product and product.id != email_product.id:
-            errors["email"]="Email is already in use"
-        return templates.TemplateResponse("views/product/update.html",{"request":request, "errors": errors, "product": product})
+    # if errors:
+    #     if type(email_product) == Product and product.id != email_product.id:
+    #         errors["email"]="Email is already in use"
+    #     return templates.TemplateResponse("views/product/update.html",{"request":request, "errors": errors, "product": product})
 
-    if type(email_product) == Product and product.id != email_product.id:
-        errors["email"]="Email is already in use"
-        return templates.TemplateResponse("views/product/update.html",{"request":request, "errors": errors, "product": product})
+    # if type(email_product) == Product and product.id != email_product.id:
+    #     errors["email"]="Email is already in use"
+    #     return templates.TemplateResponse("views/product/update.html",{"request":request, "errors": errors, "product": product})
 
     product_dict = dict(product)
-    password = product_schema(db_client.product.find_one({"_id": ObjectId(product.id)}))["password"]
-    product_dict["password"] = password
+    image = product_schema(db_client.product.find_one({"_id": ObjectId(product.id)}))["image"]
+    code = product_schema(db_client.product.find_one({"_id": ObjectId(product.id)}))["code"]
+    product_dict["image"] = image
+    product_dict["code"] = code
     del product_dict["id"]
 
     try:
@@ -108,7 +112,7 @@ async def update_product (request: Request):
     except:
         return {"error":"No se pudo actualizar el Product"}
     
-    return RedirectResponse("/productdb", status_code=303)
+    return RedirectResponse("/product", status_code=303)
 
 # Active / Inactive
 @route.get("/changestate/{id}", status_code=204)
@@ -122,7 +126,7 @@ async def toggle_state(id: str):
         product["state"] = True
         db_client.product.find_one_and_replace({"_id":ObjectId(id)}, product)
 
-    return RedirectResponse("/productdb/list")
+    return RedirectResponse("/product/list")
 
 # Delete - Eliminar
 @route.delete("/delete/{id}", status_code=204)
@@ -135,7 +139,7 @@ async def delete_product (id: str):
     
     return {"message":"Product eliminado exitosamente"}
 
-def buscar_Product_por_columna (field: str, key):
+def buscar_product_por_columna (field: str, key):
 
     try:
         product = db_client.product.find_one({field:key})
