@@ -98,7 +98,6 @@ checkboxes.forEach((element)=>{
 // }
 
 let checkbox = document.getElementById('show');
-let row = document.querySelectorAll('#tablerow');
 let estado = document.querySelectorAll('#stateUser');
 
 checkbox.addEventListener("click",mostrar)
@@ -126,11 +125,7 @@ if (localStorage.getItem("showHidden") == "true") {
 function rowBucle(display, state) {
     for (let index = 0; index < estado.length; index++) {
         if (estado[index].textContent.toLowerCase() == `${state}`) {
-            for (let index = 0; index < row.length; index++) {
-              if (estado[index].textContent.toLowerCase() == `${state}`) {
-                row[index].setAttribute('style',`display:${display}`);
-              }
-            }
+            estado[index].parentElement.parentElement.setAttribute('style',`display:${display}`);
         }
     }
 }
