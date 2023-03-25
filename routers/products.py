@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from passlib.context import CryptContext
 from config.settings import Settings
 import shutil
+import os
 
 route = APIRouter(prefix="/product", tags=["product"])
 
@@ -87,7 +88,7 @@ async def create_product (request: Request, file: UploadFile = File(...)):
 
 # Post - Actualizar
 @route.post("/update")
-async def update_product (request: Request):
+async def update_product (request: Request, file: UploadFile = File(...)):
     product: Product = await Product.as_form(request)
     # errors = Product.is_valid_product(product, action="update")
     # email_product = buscar_product_por_columna(field="email", key=product.email)
@@ -102,9 +103,17 @@ async def update_product (request: Request):
     #     return templates.TemplateResponse("views/product/update.html",{"request":request, "errors": errors, "product": product})
 
     product_dict = dict(product)
-    image = product_schema(db_client.product.find_one({"_id": ObjectId(product.id)}))["image"]
     code = product_schema(db_client.product.find_one({"_id": ObjectId(product.id)}))["code"]
-    product_dict["image"] = image
+    imagename=f"{product.id}{file.filename}"
+
+    try:
+        if not len(file.filename) == 0:
+            with open(Settings.PRODUCT_IMAGES_DIRECTORY+imagename, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+    finally:
+        file.file.close()
+
+    product_dict["image"] = imagename
     product_dict["code"] = code
     del product_dict["id"]
 
@@ -139,6 +148,18 @@ async def delete_product (id: str):
         return {"error":"El Product no pudo ser eliminado"}
     
     return {"message":"Product eliminado exitosamente"}
+
+# Remove Image
+@route.get("/removeimage/{id}")
+def remove_image_of_product (id: str):
+    product = product_schema(db_client.product.find_one({"_id": ObjectId(id)}))
+    if(not product["image"] == ""):
+        os.remove(Settings.PRODUCT_IMAGES_DIRECTORY+product["image"])
+    product["image"] = ""
+
+    db_client.product.find_one_and_replace({"_id": ObjectId(id)}, product)
+
+    return True
 
 def buscar_product_por_columna (field: str, key):
 

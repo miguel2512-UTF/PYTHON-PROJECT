@@ -214,19 +214,19 @@
                               <div class="carousel-item active">
                                 <div class="img-container">
                                     <img src="" alt="" id="img-product">
-                                    <button class="btn btn-primary"><i class="fa-solid fa-x"></i></button>
+                                    <a class="btn btn-primary" id="removeImage" href="removeimage/63f91b335f9fd03575884a76"><i class="fa-solid fa-x"></i></a>
                                 </div>
                               </div>
                               <div class="carousel-item">
                                 <div class="img-container">
                                     <img src="" alt="" id="img-product">
-                                    <button class="btn btn-primary"><i class="fa-solid fa-x"></i></button>
+                                    <a class="btn btn-primary"><i class="fa-solid fa-x"></i></a>
                                 </div>
                               </div>
                               <div class="carousel-item">
                                 <div class="img-container">
                                     <img src="" alt="" id="img-product">
-                                    <button class="btn btn-primary"><i class="fa-solid fa-x"></i></button>
+                                    <a class="btn btn-primary"><i class="fa-solid fa-x"></i></a>
                                 </div>
                               </div>
                             </div>
@@ -317,6 +317,7 @@
                         $('#modal-edit #price').val(product.price)
                         $('#modal-edit #stock').val(product.stock)
                         $('#modal-edit #img-product').attr("src", `{{ url_for('static', path='assets/product_images/') }}${product.image}`)
+                        $('#modal-edit #removeImage').attr('href',`removeimage/${product.id}`)
                         // $('#form-edit #image').val(product.image)
                         if (product.state) {
                             $('#modal-edit #state').text("Public") 
@@ -330,6 +331,21 @@
                     }
                 })
             });
+
+            $('#removeImage').on('click', function(event) {
+                event.preventDefault();
+                element = $(this)
+                let href = element.attr('href');
+
+                $.get(href, function (res) {
+                    console.log(res);
+                    if (res) {
+                        element.siblings().attr('src', '')
+                    }else{
+                        element.parent().text('Error')
+                    }
+                })
+            })
         });
     </script>
     
