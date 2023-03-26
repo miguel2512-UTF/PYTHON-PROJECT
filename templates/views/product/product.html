@@ -62,7 +62,11 @@
                 {% for product in products %}
                 <div class="product-card">
                     <div class="img-container">
+                        {% if product.image != "" %}
                         <img src="{{ url_for('static', path='assets/product_images/') }}{{ product.image }}" alt="">
+                        {% else %}
+                        <img src="" alt="">
+                        {% endif %}
                         <div class="stock-backdrop">
                         </div>
                         <div class="stock">
@@ -214,7 +218,7 @@
                               <div class="carousel-item active">
                                 <div class="img-container">
                                     <img src="" alt="" id="img-product">
-                                    <a class="btn btn-primary" id="removeImage" href="removeimage/63f91b335f9fd03575884a76"><i class="fa-solid fa-x"></i></a>
+                                    <a class="btn btn-primary" id="removeImage" href="removeimage/"><i class="fa-solid fa-x"></i></a>
                                 </div>
                               </div>
                               <div class="carousel-item">
@@ -296,7 +300,11 @@
                 $.get(href, function (product, status) {
                     if (action == "search") {
                         $('#modal-info #code').text(`Product ${product.code}`)
-                        $('#modal-info #img-product').attr("src", `{{ url_for('static', path='assets/product_images/') }}${product.image}`)
+                        if (!product.image == "") {
+                            $('#modal-info #img-product').attr("src", `{{ url_for('static', path='assets/product_images/') }}${product.image}`)
+                        }else{
+                            $('#modal-info #img-product').attr("src", "")
+                        }
                         if (product.state) {
                             $('#statePublic').removeAttr("hidden")
                             $('#statePrivate').attr("hidden","")
@@ -316,9 +324,12 @@
                         $('#modal-edit #description').val(product.description)
                         $('#modal-edit #price').val(product.price)
                         $('#modal-edit #stock').val(product.stock)
-                        $('#modal-edit #img-product').attr("src", `{{ url_for('static', path='assets/product_images/') }}${product.image}`)
+                        if (!product.image == "") {
+                            $('#modal-edit #img-product').attr("src", `{{ url_for('static', path='assets/product_images/') }}${product.image}`)
+                        }else{
+                            $('#modal-edit #img-product').attr("src", "")
+                        }
                         $('#modal-edit #removeImage').attr('href',`removeimage/${product.id}`)
-                        // $('#form-edit #image').val(product.image)
                         if (product.state) {
                             $('#modal-edit #state').text("Public") 
                             $('#modal-edit #state').val("True")

@@ -64,12 +64,13 @@ async def create_product (request: Request, file: UploadFile = File(...)):
     # We created the product and we take the id 
     id_product = db_client.product.insert_one(product_dict).inserted_id
 
-    imagename=f"{id_product}{file.filename}"
+    imagename=""
     
     # Save us the image
     # Guardamos la imagen
     try:
         if not len(file.filename) == 0:
+            imagename=f"{id_product}{file.filename}"
             with open(Settings.PRODUCT_IMAGES_DIRECTORY+imagename, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
     finally:
@@ -104,16 +105,22 @@ async def update_product (request: Request, file: UploadFile = File(...)):
 
     product_dict = dict(product)
     code = product_schema(db_client.product.find_one({"_id": ObjectId(product.id)}))["code"]
-    imagename=f"{product.id}{file.filename}"
+    oldimage = product_schema(db_client.product.find_one({"_id": ObjectId(product.id)}))["image"]
+    newimage = ""
 
+    if(newimage != oldimage):
+        if (not oldimage == ""):
+            os.remove(Settings.PRODUCT_IMAGES_DIRECTORY+oldimage)
+    
     try:
         if not len(file.filename) == 0:
-            with open(Settings.PRODUCT_IMAGES_DIRECTORY+imagename, "wb") as buffer:
+            newimage=f"{product.id}{file.filename}"
+            with open(Settings.PRODUCT_IMAGES_DIRECTORY+newimage, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
     finally:
         file.file.close()
 
-    product_dict["image"] = imagename
+    product_dict["image"] = newimage
     product_dict["code"] = code
     del product_dict["id"]
 
