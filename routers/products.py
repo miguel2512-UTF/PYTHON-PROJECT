@@ -57,9 +57,11 @@ async def create_product (request: Request, file: UploadFile = File(...)):
     return RedirectResponse("/product", status_code=303)
 
 def generate_product_code():
-    products_len = len(ProductService.findAll())
+    last_product = ProductService.findAll()[-1]
+    last_code = last_product["code"].split("00")[-1]
+    code = int(last_code) + 1
     code_format = f"P00"
-    product_code = code_format + str(products_len + 1)
+    product_code = code_format + str(code)
 
     return product_code
 
@@ -136,7 +138,7 @@ async def delete_product (id: str):
 
 # Remove Image
 @route.get("/removeimage/{id}")
-def remove_image_of_product (id: str):
+async def remove_image_of_product (id: str):
     product = product_schema(db_client.product.find_one({"_id": ObjectId(id)}))
     if(not product["image"] == ""):
         os.remove(Settings.PRODUCT_IMAGES_DIRECTORY+product["image"])
@@ -145,6 +147,11 @@ def remove_image_of_product (id: str):
     db_client.product.find_one_and_replace({"_id": ObjectId(id)}, product)
 
     return True
+
+@route.get("/page/{id}", response_class=HTMLResponse)
+async def product_page(request: Request, id: str):
+    product = product_schema(db_client.product.find_one({"_id": ObjectId(id)}))
+    return templates.TemplateResponse("views/product/product-page.html", { "request": request, "product": product })
 
 def buscar_product_por_columna (field: str, key):
 

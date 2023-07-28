@@ -61,39 +61,41 @@
                 </div>
                 {% for product in products %}
                 <div class="product-card">
-                    <div class="img-container">
-                        {% if product.image != "" %}
-                        <img src="{{ url_for('static', path='assets/product_images/') }}{{ product.image }}" alt="">
-                        {% else %}
-                        <img src="" alt="">
-                        {% endif %}
-                        <div class="stock-backdrop">
-                        </div>
-                        <div class="stock">
-                            <p>{{ product.stock }} Und</p>
-                        </div>
-                        {% if product.state %}
-                            <span class="badge rounded-pill text-bg-success" id="stateUser"><div class="align f-14"><i class="bi bi-eye-fill mr-5"></i>Public</div></span> 
-                        {% else %}
-                            <span class="badge rounded-pill text-bg-warning" id="stateUser"><div class="align f-14"><i class="bi bi-eye-slash-fill mr-5"></i>Private</div></span>
-                        {% endif %}
-                    </div>
-                    <div class="product-body">
-                        <h1 class="title">{{ product.name }}</h1>
-                        <p class="product-price">{{ product.price }}</p>
-                        <p class="product-desc">{{ product.description }}</p> 
-                    </div>
-                    <div class="product-footer align">
-                        <a href="/product/search/{{ product.code }}" class="btn btn-primary btn-sm btn-circular mr-5 btn-edit" action="edit"><i class="bi bi-pencil-square"></i></a>
-                        <a href="/product/delete/{{ product.id }}" class="btn btn-secondary btn-sm btn-circular mr-5"><i class="bi bi-trash"></i></a>
-                        <a href="changestate/{{ product.id }}" class="form-switch" style="cursor: auto;">
-                            {% if product.state %}
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked>
+                    <a href="/product/page/{{product.id}}">
+                        <div class="img-container">
+                            {% if product.image != "" %}
+                            <img src="{{ url_for('static', path='assets/product_images/') }}{{ product.image }}" alt="">
                             {% else %}
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            <img src="" alt="">
                             {% endif %}
-                        </a>
-                    </div>
+                            <div class="stock-backdrop">
+                            </div>
+                            <div class="stock">
+                                <p>{{ product.stock }} Und</p>
+                            </div>
+                            {% if product.state %}
+                                <span class="badge rounded-pill text-bg-success" id="stateUser"><div class="align f-14"><i class="bi bi-eye-fill mr-5"></i>Public</div></span> 
+                            {% else %}
+                                <span class="badge rounded-pill text-bg-warning" id="stateUser"><div class="align f-14"><i class="bi bi-eye-slash-fill mr-5"></i>Private</div></span>
+                            {% endif %}
+                        </div>
+                        <div class="product-body">
+                            <h1 class="title">{{ product.name }}</h1>
+                            <p class="product-price">{{ product.price }}</p>
+                            <p class="product-desc">{{ product.description }}</p> 
+                        </div>
+                        <div class="product-footer align">
+                            <a href="/product/search/{{ product.code }}" class="btn btn-primary btn-sm btn-circular mr-5 btn-edit" action="edit"><i class="bi bi-pencil-square"></i></a>
+                            <a href="/product/delete/{{ product.id }}" class="btn btn-secondary btn-sm btn-circular mr-5"><i class="bi bi-trash"></i></a>
+                            <a href="changestate/{{ product.id }}" class="form-switch" style="cursor: auto;">
+                                {% if product.state %}
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked>
+                                {% else %}
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                                {% endif %}
+                            </a>
+                        </div>
+                    </a>
                 </div>
                 {% endfor %}
             </div> 
@@ -318,6 +320,7 @@
                         $('#modal-info .btn-edit').attr("href", `/product/search/${product.code}`)
                         $('#modal-info').modal("show")
                     }else if (action == "edit") {
+                        $('#modal-edit #exampleModalLabel').text(`Edit Product ${product.code}`)
                         $('#modal-edit #id').val(product.id)
                         $('#modal-edit #name').val(product.name)
                         $('#modal-edit #description').val(product.description)
